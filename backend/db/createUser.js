@@ -2,10 +2,10 @@ import bcrypt from 'bcryptjs';
 import pool from './pool.js';
 
 async function createUser() {
-  const username = 'Aayush';
-  const plainPassword = 'Aayush1210'; 
+  const username = process.env.VITE_DEFAULT_USERNAME;
+  const plainPassword = process.env.VITE_DEFAULT_PASSWORD; 
 
-  const hashedPassword = await bcrypt.hash(plainPassword, 10);
+  const hashedPassword = bcrypt.hash(plainPassword, 10);
 
   try {
     await pool.query(
