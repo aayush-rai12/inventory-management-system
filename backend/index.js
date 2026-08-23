@@ -13,7 +13,7 @@ import simulateRoutes from "./routes/simulate.routes.js";
 import resetRoutes from "./routes/reset.routes.js";
 import { startConsumer } from "./kafka/consumer.js";
 
-app.get('/health', (req, res)=>{
+app.get('/', (req, res)=>{
   res.json({
     success: true,
     message: 'inventory service is running'
