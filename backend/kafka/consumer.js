@@ -3,7 +3,7 @@ import { addPurchase, processSale } from '../services/fifo.service.js';
 
 const consumer = kafka.consumer({ groupId: 'inventory-consumer-group' });
 
-async function runConsumer() {
+export async function startConsumer() {
   await consumer.connect();
   console.log('Consumer connected');
 
@@ -30,7 +30,7 @@ async function runConsumer() {
     },
   });
 }
-
-runConsumer().catch((err) => {
-  console.error('Consumer error:', err);
-});
+// Only runs when this file is executed directly (local dev)
+if (import.meta.url === `file://${process.argv[1]}`) {
+  startConsumer();
+}
