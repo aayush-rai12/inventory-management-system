@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { getProducts, getLedger, resetData } from "../api/client";
 import StockOverview from "../components/StockOverview";
 import TransactionLedger from "../components/TransactionLedger";
-import SimulateButton from "../components/Simulatebutton";
+import SimulateButton from "../components/SimulateButton";
 
 export default function Dashboard() {
   const [products, setProducts] = useState([]);
