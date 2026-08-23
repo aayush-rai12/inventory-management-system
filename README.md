@@ -1,4 +1,4 @@
-# Inventory Management System (FIFO) — Real-Time Ingestion & Live Dashboard
+# Inventory Management System (FIFO) - Real-Time Ingestion & Live Dashboard
 
 A full-stack inventory management tool for a small trading business, using **FIFO (First-In-First-Out)** costing. Inventory events (purchases and sales) are ingested in real time via **Apache Kafka** (Redpanda Cloud), processed by a Node.js backend, and visualized on a live React dashboard.
 
@@ -19,29 +19,29 @@ A full-stack inventory management tool for a small trading business, using **FIF
 - **Auth:** JWT + bcrypt
 - **Deployment:** Render (backend + Kafka consumer), Vercel (frontend)
 
-## FIFO Logic — How It Works
+## FIFO Logic -- How It Works
 
-Every **purchase** event creates a new inventory batch with its own quantity, unit price, and timestamp. Every **sale** event consumes stock from the **oldest available batches first** — this is what "FIFO" means in practice.
+Every **purchase** event creates a new inventory batch with its own quantity, unit price, and timestamp. Every **sale** event consumes stock from the **oldest available batches first** -- this is what "FIFO" means in practice.
 
-When a sale comes in for, say, 50 units, and there are two batches available — 30 units at ₹100 and 40 units at ₹120 — the system takes all 30 from the older, cheaper batch and 20 from the next one:
+When a sale comes in for, say, 50 units, and there are two batches available -- 30 units at ₹100 and 40 units at ₹120 -- the system takes all 30 from the older, cheaper batch and 20 from the next one:
 
 ```
 Cost = (30 × ₹100) + (20 × ₹120) = ₹3000 + ₹2400 = ₹5400
 ```
 
-This mirrors how a real trading business accounts for cost of goods sold — older, and often cheaper, stock is depleted before newer stock.
+This mirrors how a real trading business accounts for cost of goods sold -- older, and often cheaper, stock is depleted before newer stock.
 
 **Implementation details:**
 - Each sale runs inside a database transaction with row-level locking (`SELECT ... FOR UPDATE`) on the batches being consumed, to prevent two concurrent sales from over-selling the same stock.
-- If there isn't enough stock across all batches to fulfill a sale, the transaction is rolled back and the event is rejected — inventory can never go negative.
-- A partial index on `inventory_batches (product_id, purchase_timestamp)` — filtered to batches with remaining stock — keeps the "find the oldest available batch" lookup fast as the dataset grows.
+- If there isn't enough stock across all batches to fulfill a sale, the transaction is rolled back and the event is rejected -- inventory can never go negative.
+- A partial index on `inventory_batches (product_id, purchase_timestamp)` -- filtered to batches with remaining stock -- keeps the "find the oldest available batch" lookup fast as the dataset grows.
 
 ## Database Schema
 
-- **`products`** — master list of product IDs.
-- **`inventory_batches`** — one row per purchase, tracking both the original quantity and the remaining (unconsumed) quantity.
-- **`sales`** — one row per sale, with the FIFO-computed `total_cost`.
-- **`users`** — login credentials (bcrypt-hashed passwords).
+- **`products`** -- master list of product IDs.
+- **`inventory_batches`** -- one row per purchase, tracking both the original quantity and the remaining (unconsumed) quantity.
+- **`sales`** -- one row per sale, with the FIFO-computed `total_cost`.
+- **`users`** -- login credentials (bcrypt-hashed passwords).
 
 ## API Endpoints
 
@@ -50,7 +50,7 @@ This mirrors how a real trading business accounts for cost of goods sold — old
 | GET | `/health` | Health check | No |
 | POST | `/auth/register` | Create a login (not required by spec, added for convenience) | No |
 | POST | `/auth/login` | Log in, returns a JWT | No |
-| GET | `/products` | Stock overview — quantity, total cost, avg cost/unit per product | Yes |
+| GET | `/products` | Stock overview -- quantity, total cost, avg cost/unit per product | Yes |
 | GET | `/ledger` | Combined purchase + sale history, chronological | Yes |
 | POST | `/simulate` | Publishes one random purchase/sale event to Kafka | Yes |
 | POST | `/reset` | Clears transactional data (keeps login intact) | Yes |
@@ -71,7 +71,7 @@ Events are published to the `inventory-events` topic:
 }
 ```
 
-For `"sale"` events, `unit_price` is omitted — the cost is computed server-side using FIFO, not supplied by the event.
+For `"sale"` events, `unit_price` is omitted -- the cost is computed server-side using FIFO, not supplied by the event.
 
 ## Running Locally
 
